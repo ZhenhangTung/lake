@@ -2,7 +2,10 @@ package main // must be main for plugin entry point
 
 import (
 	"context"
+<<<<<<< HEAD
 	"time"
+=======
+>>>>>>> 149c367 (feat: removed mysql dependency, tests expanded, refactors)
 
 	"github.com/merico-dev/lake/logger"
 	lakeModels "github.com/merico-dev/lake/models"
