@@ -1,0 +1,44 @@
+version: "3"
+services:
+  grafana:
+    hostname: grafana
+    image: grafana/grafana:8.0.6
+    ports:
+      - 3002:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/img/grafana_icon.svg:/usr/share/grafana/public/img/grafana_icon.svg:rw
+      - ./grafana/img:/usr/share/grafana/public/img/lake:ro
+    environment:
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_DASHBOARDS_JSON_ENABLED=true
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_LIVE_ALLOWED_ORIGINS=*
+    restart: always
+    depends_on:
+      - mysql
+  devlake:
+    image: mericodev/lake:0.3.0
+    platform: linux/x86_64
+    ports:
+      - 127.0.0.1:8080:8080
+    env_file:
+      - ./.env
+    restart: always
+    depends_on:
+      - grafana
+  config-ui:
+    image: mericodev/config-ui:0.3.0
+    ports:
+      - 127.0.0.1:4000:4000
+    environment:
+      - ENV_FILEPATH=/.env
+      - DEVLAKE_ENDPOINT=http://devlake:8080
+      - GRAFANA_PORT=3002/d/RXJZNpMnz/homepage?orgId=1
+    volumes:
+      - ./.env:/.env:rw
+volumes:
+  mysql-storage:
+  grafana-storage:
